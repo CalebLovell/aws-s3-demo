@@ -38,16 +38,21 @@ Once your account is set up, go to https://console.aws.amazon.com and log in.
     <img src='assets/s3-02.jpg' />
 
 1. It is highly recommended by AWS that you delete your root access keys since they provide complete control over all AWS products and instead create a new IAM user with access restricted to only to specific products. In our case, we want to create a user with restricted access to S3.
+
     1. Click delete your root access keys, then manage security credentials, then continue to security credentials
-    <img src='assets/s3-03.jpg' />
+      <img src='assets/s3-03.jpg' />
+
     1. In the actions column, click delete, then yes to the confirmation box.
-    <img src='assets/s3-04.jpg' />
+      <img src='assets/s3-04.jpg' />
+
 1. Click 'Users' on the left navigation menu, then 'Add user'.
     <img src='assets/s3-05.jpg' />
 1. Type a name for the user and check the 'programmatic access' checkbox, then click 'Next: permissions'
     <img src='assets/s3-06.jpg' />
+1. No changes necessary on this screen, so click 'Next: tags'
+    <img src='assets/s3-06-01.png' />
 1. No changes necessary on the next screen so just click 'Next: review'
-    <img src='assets/s3-07.jpg' />
+    <img src='assets/s3-07.png' />
 1. No Changes necessary on this screen either, so click 'Create user'
     <img src='assets/s3-08.jpg' />
 1. The next screen gives us the Access Key ID and Secret Access Key for the user. Click 'Show' in the secret access key column.
@@ -58,77 +63,95 @@ Once your account is set up, go to https://console.aws.amazon.com and log in.
 
     <img src='assets/s3-09-0.jpg' />
 
-1. Click 'Close' at the bottom right corner.
+1. Click 'Close' at the bottom right corner of the success screen.
 1. Click on the name of the user that you just created.
     <img src='assets/s3-10.jpg' />
 1. Copy the user ARN into a separate note taking app. You can use your .env, just make sure to not put it in any document that will be committed to github. You can add a note to your .env by placing a # in front of it.
     <img src='assets/s3-11.jpg' />
 
 ## Create a New Bucket
+
 1. Click the services dropdown on the top navbar. Search for S3, or find it under 'storage' in the menu. S3 should also be an option in the 'History' list on the left part of the dropdown menu.
-<img src='assets/s3-12.jpg' />
+    <img src='assets/s3-12.jpg' />
+
 1. Click 'Create bucket'
-<img src='assets/s3-13.jpg' />
+    <img src='assets/s3-13.jpg' />
+
 1. Give your bucket a name. Bucket names need to be unique so it may take a few tries to find one that is available. Then select your region. The code in server.js is assuming the bucket region will be 'US West (N. California)', so if you pick a different region you may need to modify the name of the region in server.js.
-<img src='assets/s3-14.jpg' />
+    <img src='assets/s3-14.png' />
+
 1. In step 2 of the prompt, we don't need to change anything so click 'Next'.
-<img src='assets/s3-15.jpg' />
-1. We also don't need to modify anything in step 3 of the prompt, so click 'Next'
-<img src='assets/s3-16.jpg' />
+    <img src='assets/s3-15.png' />
+
+1. Un-check the two boxes shown outlined in yellow in the image below.
+    <img src='assets/s3-16.png' />
+
 1. On this screen, review your bucket details. This is probably a good time to copy your bucket name to your .env in the `S3_BUCKET=` field.
-<img src='assets/s3-17.jpg' />
+    <img src='assets/s3-17.png' />
+
 1. Once you are finished, click 'Create bucket'
 
 ## Configure Bucket Permissions
 1. On your S3 dashboard, click the name of your bucket.
-<img src='assets/s3-18.jpg' />
-1. Click the 'Permissions' tab at the top.
-<img src='assets/s3-19.jpg' />
-1. Click on 'Bucket policy'
-<img src='assets/s3-21.jpg' />
-1. Paste the following into the policy editor:
-<details>
-<summary><code>Starter Bucket Policy</code></summary>
+    <img src='assets/s3-18.jpg' />
 
-```
-{
-    "Version": "2012-10-17",
-    "Id": "Policy1531943908491",
-    "Statement": [
-        {
-            "Sid": "Stmt1531943904542",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "COPY ARN FROM IAM CREATED USER HERE"
-            },
-            "Action": [
-                "s3:DeleteObject",
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:Get*",
-                "s3:Put*"
-            ],
-            "Resource": "arn:aws:s3:::NAME-OF-BUCKET/*"
-        }
-    ]
-}
-```
-</details>
+1. Click the 'Permissions' tab at the top.
+    <img src='assets/s3-19.jpg' />
+
+1. Click on 'Bucket policy'
+    <img src='assets/s3-21.jpg' />
+
+1. Paste the following into the policy editor:
+
+    <details>
+    <summary><code>Starter Bucket Policy</code></summary>
+
+    ```
+    {
+        "Version": "2012-10-17",
+        "Id": "Policy1531943908491",
+        "Statement": [
+            {
+                "Sid": "Stmt1531943904542",
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "COPY ARN FROM IAM CREATED USER HERE"
+                },
+                "Action": [
+                    "s3:DeleteObject",
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:Get*",
+                    "s3:Put*"
+                ],
+                "Resource": "arn:aws:s3:::NAME-OF-BUCKET/*"
+            }
+        ]
+    }
+    ```
+    </details>
 
 1. There are 2 lines in this policy that need to be changed in the JSON:
-<img src='assets/s3-20.jpg' />
+    <img src='assets/s3-20.jpg' />
+
   1. Copy and paste the ARN from the user that you created earlier into Principal.AWS line which is outlined in orange above.
+
   1. Copy and paste the bucket ARN found above the policy editor text box which is outlined in purple above into the resource property field which is highlighted in green above. After your bucket name, make sure to put a `/*` before the closing quotation mark.
+
 1. Once you are finished, click 'Save'
 
 ## Update CORS Configuration
+
 1. Click on the 'CORS configuration' button at the top of the page
-<img src='assets/s3-22.jpg' />
+    <img src='assets/s3-22.jpg' />
+
 1. Paste the following into the text box:
+
     <details>
     <summary><code>CORS Configuration</code></summary>
 
-    ```xml
+    ```
+
     <CORSConfiguration>
         <CORSRule>
             <AllowedOrigin>*</AllowedOrigin>
@@ -138,27 +161,36 @@ Once your account is set up, go to https://console.aws.amazon.com and log in.
             <AllowedHeader>*</AllowedHeader>
         </CORSRule>
     </CORSConfiguration>
+
     ```
     </details>
+
 
 1. Once you are finished, click 'Save'
 
 **_NOTE:_ The bucket policy and CORS configuration above are meant to get you up and running in development. Prior to using your bucket in a production environment, you should review the AWS S3 Documentation and determine the best CORS configuration and bucket policy for your situation based on what you learn. With proper implementation, the bucket policy and CORS configuration can limit your exposure to tragic situations caused by bad people gaining access to your bucket.**
 
 ## This Demo App Should Now Work
+
 1. Open one terminal and run `nodemon`
+
 1. Open a second terminal and run `npm start`
-<img src='assets/s3-23.jpg' />
+    <img src='assets/s3-23.jpg' />
+
 1. If a new browser window didn't open automatically, open a new one and navigate to http://localhost:3000
-<img src='assets/s3-24.jpg' />
+    <img src='assets/s3-24.jpg' />
+
 1. You can now drag an image into the file drop zone, or you can also click inside the square and select a picture to upload.
-<img src='assets/s3-25.jpg' />
+    <img src='assets/s3-25.jpg' />
+
 1. You should then see a loading animation inside the drop zone while your file is being uploaded to s3.
+
 1. If your upload is successful, you should see the placeholder url text at the top of the page change and shortly after you should see the your uploaded image on the screen.
-<img src='assets/s3-26.jpg' />
-<img src='assets/s3-27.jpg' />
-1. You should now be able to go to your S3 bucket and see that your image is now in the bucket. You may need to click the refresh icon.
-<img src='assets/s3-28.jpg' />
+    <img src='assets/s3-26.jpg' />
+    <img src='assets/s3-27.jpg' />
+
+1. You should now be able to go to your S3 bucket and see that your image is now in the bucket. You may need to refresh your browser.
+    <img src='assets/s3-28.jpg' />
 
 ## Code Walkthrough
 ### App.js
