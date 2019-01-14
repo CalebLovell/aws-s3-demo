@@ -7,11 +7,11 @@ app.use(express.json());
 
 const aws = require('aws-sdk');
 
-const { S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
+const { S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION } = process.env;
 
 app.get('/api/signs3', (req, res) => {
   aws.config = {
-    region: 'us-west-1',
+    region: AWS_REGION,
     accessKeyId: AWS_ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
   };
